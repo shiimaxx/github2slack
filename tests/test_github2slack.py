@@ -1,50 +1,58 @@
 from datetime import datetime
 import unittest
+from unittest.mock import Mock, patch
 
 from github2slack import fetch_unread_notifications
 
 
+dummy_notification0 = Mock()
+dummy_notification0.repository.name = 'github2slack'
+dummy_notification0.subject.title = 'pre-release'
+dummy_notification0.unread = True
+dummy_notification0.updated_at = datetime(2018, 1, 1, 0, 0)
+dummy_notification0.url = 'https:example.com/notification/threads/100000000'
+
+dummy_notification1 = Mock()
+dummy_notification1.repository.name = 'github2slack'
+dummy_notification1.subject.title = 'Feature/logging'
+dummy_notification1.unread = True
+dummy_notification1.updated_at = datetime(2018, 1, 1, 1, 25)
+dummy_notification1.url = 'https:example.com/notification/threads/100000001'
+
+dummy_notification2 = Mock()
+dummy_notification2.repository.name = 'github2slack'
+dummy_notification2.subject.title = 'Refactoring'
+dummy_notification2.unread = False
+dummy_notification2.updated_at = datetime(2018, 1, 5, 10, 5)
+dummy_notification2.url = 'https:example.com/notification/threads/100000002'
+
+dummy_notification3 = Mock()
+dummy_notification3.repository.name = 'pocket'
+dummy_notification3.subject.title = 'Add test'
+dummy_notification3.unread = True
+dummy_notification3.updated_at = datetime(2018, 1, 5, 13, 23)
+dummy_notification3.url = 'https:example.com/notification/threads/100000003'
+
+dummy_notification4 = Mock()
+dummy_notification4.repository.name = 'dynamic-route53'
+dummy_notification4.subject.title = 'development'
+dummy_notification4.unread = False
+dummy_notification4.updated_at = datetime(2018, 1, 6, 3, 45)
+dummy_notification4.url = 'https:example.com/notification/threads/100000004'
+
 NOTIFICATIONS = (
-    {
-        'repository': {'name': 'github2slack'},
-        'subject': {'title': 'pre-release'},
-        'unread': True,
-        'updated_at': datetime(2018, 1, 1, 0, 0),
-        'url': 'https:example.com/notification/threads/100000000'
-    },
-    {
-        'repository': {'name': 'github2slack'},
-        'subject': {'title': 'Feature/logging'},
-        'unread': True,
-        'updated_at': datetime(2018, 1, 1, 1, 25),
-        'url': 'https:example.com/notification/threads/100000001'
-    },
-    {
-        'repository': {'name': 'github2slack'},
-        'subject': {'title': 'Refactoring'},
-        'unread': False,
-        'updated_at': datetime(2018, 1, 5, 10, 5),
-        'url': 'https:example.com/notification/threads/100000004'
-    },
-    {
-        'repository': {'name': 'pocket'},
-        'subject': {'title': 'Add test'},
-        'unread': True,
-        'updated_at': datetime(2018, 1, 2, 13, 23),
-        'url': 'https:example.com/notification/threads/100000002'
-    },
-    {
-        'repository': {'name': 'dynamic-route53'},
-        'subject': {'title': 'development'},
-        'unread': False,
-        'updated_at': datetime(2018, 1, 5, 3, 45),
-        'url': 'https:example.com/notification/threads/100000003'
-    }
+    dummy_notification0,
+    dummy_notification1,
+    dummy_notification2,
+    dummy_notification3,
+    dummy_notification4
 )
 
 
 class TestGithub2Slack(unittest.TestCase):
-    def test_fetch_unread_notification(self):
+    @patch('github2slack._fetch_notifications')
+    def test_fetch_unread_notification(self, m):
+        m.return_value = NOTIFICATIONS
         unread_notifications = fetch_unread_notifications()
         self.assertEqual(2, len(unread_notifications['github2slack']))
         self.assertEqual(1, len(unread_notifications['pocket']))
