@@ -57,3 +57,22 @@ class TestGithub2Slack(unittest.TestCase):
         self.assertEqual(2, len(unread_notifications['github2slack']))
         self.assertEqual(1, len(unread_notifications['pocket']))
         self.assertNotIn('dynamic-route53', unread_notifications.keys())
+
+        unread_github2slack_notification_subject = []
+        unread_github2slack_notification_updated_at = []
+        unread_github2slack_notification_url = []
+        for notification in unread_notifications['github2slack']:
+            unread_github2slack_notification_subject.append(notification['subject'])
+            unread_github2slack_notification_updated_at.append(notification['updated_at'])
+            unread_github2slack_notification_url.append(notification['url'])
+
+        self.assertListEqual(['pre-release', 'Feature/logging'], unread_github2slack_notification_subject)
+        self.assertListEqual(['2018/01/01 00:00', '2018/01/01 01:25'], unread_github2slack_notification_updated_at)
+        self.assertListEqual([
+            'https:example.com/notification/threads/100000000',
+            'https:example.com/notification/threads/100000001'
+        ], unread_github2slack_notification_url)
+
+        self.assertEqual('Add test', unread_notifications['pocket'][0]['subject'])
+        self.assertEqual('2018/01/05 13:23', unread_notifications['pocket'][0]['updated_at'])
+        self.assertEqual('https:example.com/notification/threads/100000003', unread_notifications['pocket'][0]['url'])
