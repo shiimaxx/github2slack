@@ -39,3 +39,13 @@ def fetch_unread_notifications():
             )
 
     return unread_notifications
+
+
+def make_posts_text(unread_notifications):
+    posts_text = ''
+    for repository in unread_notifications.keys():
+        posts_text += "*{}*\n".format(repository)
+        for notification in unread_notifications[repository]:
+            posts_text += "`{}` {}\n".format(notification['subject'], notification['url'])
+        posts_text += '\n'
+    return posts_text.rstrip()
