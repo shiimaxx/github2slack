@@ -33,7 +33,7 @@ def fetch_unread_notifications():
             unread_notifications[repository_name].append(
                 {
                     'subject': notification.subject.title,
-                    'updated_at': notification.updated_at,
+                    'updated_at': notification.updated_at.strftime('%Y/%m/%d %H:%M'),
                     'url': notification.url
                 }
             )
