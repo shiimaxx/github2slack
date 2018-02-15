@@ -18,7 +18,7 @@ def _fetch_notifications():
         logger.error('Set "GITHUB_USER" and "GITHUB_PASSWORD for environ variables is required')
         return
     github_ = Github(GITHUB_USER, GITHUB_PASSWORD)
-    return github_.getuser().get_notifications().get_page(0)
+    return github_.getuser().get_notifications()
 
 
 def fetch_unread_notifications():
