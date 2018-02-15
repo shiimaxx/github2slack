@@ -78,7 +78,28 @@ class TestGithub2Slack(unittest.TestCase):
         self.assertEqual('https://example.com/notification/threads/100000003', unread_notifications['pocket'][0]['url'])
 
     def test_make_posts_text(self):
-        unread_notifications = fetch_unread_notifications()
+        unread_notifications = {
+            'github2slack': [
+                {
+                    'subject': 'pre-release',
+                    'updated_at': '2018/01/01 00:00',
+                    'url': 'https://example.com/notification/threads/100000000'
+                },
+                {
+                    'subject': 'Feature/logging',
+                    'updated_at': '2018/01/01 01:25',
+                    'url': 'https://example.com/notification/threads/100000001'
+                }
+            ],
+            'pocket': [
+                {
+                    'subject': 'Add test',
+                    'updated_at': '2018/01/05 13:23',
+                    'url': 'https://example.com/notification/threads/100000003'
+                },
+            ]
+        }
+
         posts_text = make_posts_text(unread_notifications)
         self.assertEqual("""*github2slack*
 `pre-release` https://example.com/notification/threads/100000000
