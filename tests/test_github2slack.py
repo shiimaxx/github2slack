@@ -80,6 +80,9 @@ class TestGithub2Slack(unittest.TestCase):
         self.assertEqual('2018/01/05 13:23', unread_notifications['pocket'][0]['updated_at'])
         self.assertEqual('https://example.com/3', unread_notifications['pocket'][0]['url'])
 
+        m_notification.return_value = []
+        self.assertIsNone(fetch_unread_notifications())
+
     def test_make_post_text(self):
         unread_notifications = {
             'github2slack': [
