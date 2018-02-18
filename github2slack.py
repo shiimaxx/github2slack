@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from logging import getLogger, INFO
+import json
 import os
+
+from logging import getLogger, INFO
+from urllib.request import Request, urlopen
+from urllib.error import HTTPError
 
 from github import Github
 
@@ -11,6 +15,7 @@ logger.setLevel(INFO)
 
 GITHUB_USER = os.getenv('GITHUB_USER', default=None)
 GITHUB_PASSWORD = os.getenv('GITHUB_PASSWORD', default=None)
+HOOK_URL = os.getenv('HOOK_URL', default=None)
 
 
 def _fetch_notifications():
@@ -49,3 +54,26 @@ def make_posts_text(unread_notifications):
             posts_text += "`{}` {}\n".format(notification['subject'], notification['url'])
         posts_text += '\n'
     return posts_text.rstrip()
+
+
+def _make_request(posts_text):
+    payload = {'text': posts_text}
+    return Request(HOOK_URL, json.dumps(payload).encode('utf-8'))
+
+
+def post(posts_text):
+    req = _make_request(posts_text)
+    try:
+        urlopen(req)
+    except HTTPError as error_:
+        logger.error(error_)
+
+
+def main():
+    unread_notifications = fetch_unread_notifications()
+    posts_text = make_posts_text(unread_notifications)
+    post(posts_text)
+
+
+if __name__ == '__main__':
+    main()
