@@ -3,8 +3,9 @@
 
 import json
 import os
+import sys
 
-from logging import getLogger, INFO
+from logging import getLogger, INFO, StreamHandler
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 
@@ -12,6 +13,7 @@ from github import Github
 
 logger = getLogger()
 logger.setLevel(INFO)
+logger.addHandler(StreamHandler(sys.stdout))
 
 GITHUB_USER = os.getenv('GITHUB_USER', default=None)
 GITHUB_PASSWORD = os.getenv('GITHUB_PASSWORD', default=None)
@@ -40,6 +42,9 @@ def _fetch_html_url(notification):
 
 def fetch_unread_notifications():
     notifications = _fetch_notifications()
+
+    if len(notifications.get_page(0)) == 0:
+        return None
 
     unread_notifications = {}
     for notification in notifications:
@@ -83,6 +88,9 @@ def post(post_text):
 
 def main():
     unread_notifications = fetch_unread_notifications()
+    if unread_notifications is None:
+        logger.info('No unread notification')
+        sys.exit(0)
     post_text = make_post_text(unread_notifications)
     post(post_text)
 
