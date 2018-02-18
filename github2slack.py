@@ -26,6 +26,18 @@ def _fetch_notifications():
     return github_.get_user().get_notifications()
 
 
+def _fetch_html_url(notification):
+    req = Request(notification.subject.latest_comment_url)
+    try:
+        res = urlopen(req)
+    except HTTPError as error_:
+        logger.error(error_)
+
+    body = res.read()
+    loads_json = json.loads(body.decode('utf-8'))
+    return loads_json['html_url']
+
+
 def fetch_unread_notifications():
     notifications = _fetch_notifications()
 
@@ -39,7 +51,7 @@ def fetch_unread_notifications():
                 {
                     'subject': notification.subject.title,
                     'updated_at': notification.updated_at.strftime('%Y/%m/%d %H:%M'),
-                    'url': notification.url
+                    'url': _fetch_html_url(notification)
                 }
             )
 
