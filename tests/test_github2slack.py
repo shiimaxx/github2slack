@@ -2,7 +2,7 @@ from datetime import datetime
 import unittest
 from unittest.mock import Mock, patch
 
-from github2slack import fetch_unread_notifications, make_posts_text
+from github2slack import fetch_unread_notifications, make_post_text
 
 
 dummy_notification0 = Mock()
@@ -77,7 +77,7 @@ class TestGithub2Slack(unittest.TestCase):
         self.assertEqual('2018/01/05 13:23', unread_notifications['pocket'][0]['updated_at'])
         self.assertEqual('https://example.com/notification/threads/100000003', unread_notifications['pocket'][0]['url'])
 
-    def test_make_posts_text(self):
+    def test_make_post_text(self):
         unread_notifications = {
             'github2slack': [
                 {
@@ -100,10 +100,10 @@ class TestGithub2Slack(unittest.TestCase):
             ]
         }
 
-        posts_text = make_posts_text(unread_notifications)
+        post_text = make_post_text(unread_notifications)
         self.assertEqual("""*github2slack*
 `pre-release` https://example.com/notification/threads/100000000
 `Feature/logging` https://example.com/notification/threads/100000001
 
 *pocket*
-`Add test` https://example.com/notification/threads/100000003""", posts_text)
+`Add test` https://example.com/notification/threads/100000003""", post_text)

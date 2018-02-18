@@ -46,23 +46,23 @@ def fetch_unread_notifications():
     return unread_notifications
 
 
-def make_posts_text(unread_notifications):
-    posts_text = ''
+def make_post_text(unread_notifications):
+    post_text = ''
     for repository in unread_notifications.keys():
-        posts_text += "*{}*\n".format(repository)
+        post_text += "*{}*\n".format(repository)
         for notification in unread_notifications[repository]:
-            posts_text += "`{}` {}\n".format(notification['subject'], notification['url'])
-        posts_text += '\n'
-    return posts_text.rstrip()
+            post_text += "`{}` {}\n".format(notification['subject'], notification['url'])
+        post_text += '\n'
+    return post_text.rstrip()
 
 
-def _make_request(posts_text):
-    payload = {'text': posts_text}
+def _make_request(post_text):
+    payload = {'text': post_text}
     return Request(HOOK_URL, json.dumps(payload).encode('utf-8'))
 
 
-def post(posts_text):
-    req = _make_request(posts_text)
+def post(post_text):
+    req = _make_request(post_text)
     try:
         urlopen(req)
     except HTTPError as error_:
@@ -71,8 +71,8 @@ def post(posts_text):
 
 def main():
     unread_notifications = fetch_unread_notifications()
-    posts_text = make_posts_text(unread_notifications)
-    post(posts_text)
+    post_text = make_post_text(unread_notifications)
+    post(post_text)
 
 
 if __name__ == '__main__':
